@@ -1,141 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Enquiry Form with Tracking</title>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .form-container {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body class="bg-light">
-
-<div class="container">
-  <div class="form-container">
-    <h4 class="text-center mb-4">Submit Your Enquiry</h4>
-    <form id="enquiry-form">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input id="name" name="name" class="form-control" required />
-      </div>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input id="email" name="email" type="email" class="form-control" required />
-      </div>
-      <div class="form-group">
-        <label for="contact_number">Contact Number:</label>
-        <input id="contact_number" name="contact_number" class="form-control" required />
-      </div>
-      <div class="form-group">
-        <label for="gender">Gender:</label>
-        <select id="gender" name="gender" class="form-control" required>
-          <option value="" disabled selected hidden>Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" class="form-control" required></textarea>
-      </div>
-      <div class="form-check mb-2">
-        <input type="checkbox" id="age" />
-        <label for="age">I am over 18 years old</label>
-      </div>
-      <div class="form-check mb-3">
-        <input type="checkbox" id="ex" required />
-        <label for="ex">I agree with the terms and policies</label>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Submit Enquiry</button>
-    </form>
-  </div>
-
-  <div class="form-container mt-5">
-    <h5 class="text-center mb-3">Track Your Enquiry Status</h5>
-    <input id="enquiry-id" class="form-control mb-2" placeholder="Enter Enquiry ID" />
-    <button id="track-btn" class="btn btn-info btn-block">Check Status</button>
-    <div id="remark-result" class="mt-3 text-center"></div>
-  </div>
-</div>
-
-<script>
-  // Replace with your deployed Google Apps Script web app URL:
-  const scriptURL = "https://script.google.com/macros/s/AKfycbyNmaCSQhdu1fc0N6c9TSUlz758RyHKqP28MPIl8JxpptYSmqDBVg2R8ah53V6uFSO0Mg/exec";
-
-  const form = document.getElementById("enquiry-form");
-  const trackBtn = document.getElementById("track-btn");
-  const remarkResult = document.getElementById("remark-result");
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    // Prepare FormData
-    const formData = new FormData(form);
-
-    // Add enquiry ID
-    const enquiryId = "ENQ" + Date.now();
-    formData.append("enquiry_id", enquiryId);
-
-    // Add checkbox values
-    formData.append("age", document.getElementById("age").checked ? "Yes" : "No");
-    formData.append("ex", document.getElementById("ex").checked ? "Yes" : "No");
-
-    fetch(scriptURL, {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.result === "Success") {
-        Swal.fire({
-          icon: "success",
-          title: "Enquiry Submitted!",
-          html: `Your enquiry was submitted successfully.<br><strong>Enquiry ID: ${enquiryId}</strong>`
-        });
-        form.reset();
-      } else {
-        Swal.fire("Oops!", "Failed to submit enquiry. Try again.", "error");
+  <head>
+    <meta charset="UTF-8" />
+    <title>Enquiry Form with Tracking</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      .form-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 20px;
+        box-shadow: 0 0 10px #ccc;
+        background: white;
       }
-    })
-    .catch(() => {
-      Swal.fire("Oops!", "Network error. Please try again later.", "error");
-    });
-  });
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container">
+      <div class="form-container">
+        <h4 class="text-center mb-4">Submit Enquiry</h4>
+        <form id="enquiry-form">
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input class="form-control" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="contact_number">Contact Number:</label>
+            <input class="form-control" id="contact_number" name="contact_number" required />
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select class="form-control" id="gender" name="gender" required>
+              <option value="" disabled selected>Choose...</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message:</label>
+            <textarea class="form-control" id="message" name="message" required></textarea>
+          </div>
+          <div class="form-group form-check">
+            <input class="form-check-input" type="checkbox" id="age" name="age" />
+            <label for="age" class="form-check-label">Over 18 years old</label>
+          </div>
+          <div class="form-group form-check">
+            <input class="form-check-input" type="checkbox" id="ex" name="ex" required />
+            <label for="ex" class="form-check-label">Agree with terms and policies</label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        </form>
+      </div>
 
-  trackBtn.addEventListener("click", () => {
-    const enquiryId = document.getElementById("enquiry-id").value.trim();
-    if (!enquiryId) {
-      Swal.fire("Warning", "Please enter your Enquiry ID to track.", "warning");
-      return;
-    }
+      <div class="form-container mt-5">
+        <h5 class="text-center mb-3">Track Your Enquiry</h5>
+        <input class="form-control mb-2" id="enquiry-id" placeholder="Enter Enquiry ID" />
+        <button id="track-btn" class="btn btn-info btn-block">Check Status</button>
+        <div id="remark-result" class="mt-3 text-center"></div>
+      </div>
+    </div>
 
-    // Clear previous result
-    remarkResult.textContent = "";
+    <script>
+      // Send form data to Apps Script backend
+      const form = document.getElementById('enquiry-form');
+      form.addEventListener('submit', e => {
+        e.preventDefault();
 
-    fetch(`${scriptURL}?id=${encodeURIComponent(enquiryId)}`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.remark) {
-          remarkResult.innerHTML = `<strong>Status/Remarks:</strong><br>${data.remark}`;
-        } else if (data.error) {
-          remarkResult.textContent = data.error;
-        } else {
-          remarkResult.textContent = "No remarks found.";
-        }
-      })
-      .catch(() => {
-        remarkResult.textContent = "Error fetching status. Try again later.";
+        const formData = new FormData(form);
+        const enquiryId = 'ENQ' + Date.now();
+        formData.append('enquiry_id', enquiryId);
+
+        // Convert checkbox to Yes/No
+        formData.set('age', form.age.checked ? 'Yes' : 'No');
+        formData.set('ex', form.ex.checked ? 'Yes' : 'No');
+
+        // Prepare object to send
+        const data = {};
+        formData.forEach((value, key) => {
+          data[key] = value;
+        });
+
+        google.script.run
+          .withSuccessHandler(() => {
+            Swal.fire('Success', `Your enquiry has been submitted! Your Enquiry ID is: <strong>${enquiryId}</strong>`, 'success');
+            form.reset();
+          })
+          .withFailureHandler(() => {
+            Swal.fire('Error', 'There was a problem submitting your enquiry. Please try again.', 'error');
+          })
+          .submitEnquiry(data);
       });
-  });
-</script>
 
-</body>
+      // Track enquiry remark
+      document.getElementById('track-btn').addEventListener('click', () => {
+        const id = document.getElementById('enquiry-id').value.trim();
+        if (!id) {
+          alert('Please enter your Enquiry ID.');
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler((response) => {
+            const remark = response.remark || 'No remarks yet.';
+            document.getElementById('remark-result').innerHTML = `<strong>Status/Remarks:</strong><br>${remark}`;
+          })
+          .withFailureHandler(() => {
+            document.getElementById('remark-result').innerHTML = 'Error fetching remark.';
+          })
+          .getRemarkById(id);
+      });
+    </script>
+  </body>
 </html>
